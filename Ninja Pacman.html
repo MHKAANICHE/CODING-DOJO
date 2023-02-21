@@ -1,0 +1,158 @@
+<html>
+<head>
+    <title> Ninja Pacman</title>
+    <style>
+        * {
+            margin  :   0;
+            padding :   0;
+        }
+      .wall {
+        background-color: blue;
+        height: 40px;
+        width : 40px;
+        display : inline-block  
+      }
+      .blank{
+        background-color: black;
+        height : 40px;
+        width : 40px;
+        display : inline-block;
+      }
+      .sushi{
+        background-color: black;
+        height: 40px;
+        width : 40px;
+        display: inline-block;
+        background-image: url('img/sushi.png');
+        background-size : contain ;
+      }
+      /* Why calling nanajaman with # ??!! */
+      #ninjaman{ 
+        background-color: black;
+        height : 40px;
+        width: 40px;
+        display : inline-block;
+        background-image: url('img/ninja.gif');
+        background-size: contain;
+        position : absolute;
+      }
+      
+    </style>
+</head>
+
+<body>
+    <div id = 'world'></div>
+    <div id = "ninjaman"></div>
+</body>
+
+<script type = "text/javascript">
+    // world architecture : Block symbolism
+    var worldArray = [
+        [1,1,1,1,1],
+        [1,0,0,0,1],
+        [1,0,2,0,1],
+        [1,0,0,0,1],
+        [1,1,1,1,1],
+    ];
+    // Dictionnary : Block description 
+    var worldDict = 
+    {
+        0 : 'blank',
+        1 : 'wall' ,
+        2 : 'sushi'
+    }
+
+    function drawWorld()
+    {
+        output ="";
+        for( var row = 0; row<worldArray.length; row++ )
+        {
+            output += " <div class='row'>"; // creating class 'row'
+            for ( var column=0; column< worldArray[row].length; column++)
+            {
+                var block ="";
+                block = worldDict[worldArray[row][column]]; // return the blocks description
+                output += "<div class ='"+block+"'></div> "; // adding column or blocks
+            }
+            output += "</div>"; // Closing class ='row'
+
+        }
+        document.getElementById('world').innerHTML = output;
+    }
+    // invoque function : Draw World
+    drawWorld();
+
+    // we record moves of NinjaMan as Dictionary 
+    var ninjaManPosition = 
+    {
+        x : 1 ,
+        y : 1
+    }
+    // Now we create our keyboard listner to convert event to moves
+    document.onkeydown = function(e)
+    {
+        // Conserved line to check the e.keyCode value
+         console.log(e.keyCode);
+         
+        // e.keyCode : Up--> 38 // Down --> 40 // left --> 37 // right --> 39
+            
+        if(e.keyCode == 38 )// up
+        {
+            if (worldArray[ninjaManPosition.x - 1][ninjaManPosition.y] != 1)    // if not a wall 
+            {
+                ninjaManPosition.x --;  // NinjaMan can move
+            }
+            
+        }
+        if(e.keyCode == 40 )// down
+        {   
+            if (worldArray[ninjaManPosition.x + 1][ninjaManPosition.y] != 1)    // if not a wall 
+            {
+                ninjaManPosition.x ++;  // NinjaMan can move
+            }
+        }
+        if(e.keyCode == 37)// left
+        {   
+            if (worldArray[ninjaManPosition.x][ninjaManPosition.y - 1] != 1)    // if not a wall 
+            {
+                ninjaManPosition.y --;  // NinjaMan can move
+            }
+        }
+        if(e.keyCode == 39)// right
+        {
+            if (worldArray[ninjaManPosition.x][ninjaManPosition.y + 1] != 1)    // if not a wall 
+            {
+                ninjaManPosition.y ++;  // NinjaMan can move
+            }
+        }
+
+        // Eating Sushi 
+        // our position is actualised 
+            if (worldArray[ninjaManPosition.x][ninjaManPosition.y] == 2)
+            {
+                // Sushi eated (now it's a Blank)
+                worldArray[ninjaManPosition.x][ninjaManPosition.y] = 0
+                // Re-Draw the World 
+                drawWorld();
+            }
+
+        // Re-Draw NinjaMan every Click 
+        drawNinjaMan();
+        
+    }
+
+    function drawNinjaMan()
+    {
+        console.log (ninjaManPosition.x +" // "+ ninjaManPosition.y);
+        // we convert moves of NinjaMan to geographical position 
+        document.getElementById('ninjaman').style.top = 
+        ninjaManPosition.x *40+'px'
+        document.getElementById('ninjaman').style.left = 
+        ninjaManPosition.y *40+'px'
+    }
+
+    drawNinjaMan();
+    
+
+</script>
+</html>
