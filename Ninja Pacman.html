@@ -6,6 +6,13 @@
             margin  :   0;
             padding :   0;
         }
+      .ScoreAfficher{
+        background-color: rgba(118, 175, 192, 0.705);
+        height  : 60;
+        width   : 60;
+        font-size: 40;
+        background-size: contain;
+      }  
       .wall {
         background-color: blue;
         height: 40px;
@@ -24,6 +31,22 @@
         width : 40px;
         display: inline-block;
         background-image: url('img/sushi.png');
+        background-size : contain ;
+      }
+      .onigiri{
+        background-color: black;
+        height: 40px;
+        width : 40px;
+        display: inline-block;
+        background-image: url('img/onigiri.png');
+        background-size : contain ;
+      }      
+      .pumpky{
+        background-color: black;
+        height: 40px;
+        width : 40px;
+        display: inline-block;
+        background-image: url('img/pumpky.png');
         background-size : contain ;
       }
       /* Why calling nanajaman with # ??!! */
@@ -51,17 +74,52 @@
         [1,1,1,1,1],
         [1,0,0,0,1],
         [1,0,2,0,1],
-        [1,0,0,0,1],
+        [1,0,0,3,1],
         [1,1,1,1,1],
     ];
+    console.log("worldArray : "+worldArray);
+
+    // Random World 
+    // Fixed Space 10 x 10
+    // Border should be always walls 
+    // random distribution of Soushi
+    // random distribution of Onigiri
+    
+    var MaxRow      = 15;
+    var MaxColumn   = 15;
+    function CreateRandomWorld ()
+    {
+        // intialise worldArray
+        while (worldArray.length >0) {worldArray.pop() ;}
+        // create new random world 
+        for ( var i=0; i<MaxRow; i++)
+        {    
+            // Add new Row
+            worldArray [i]= [];
+
+            for (var j=0; j<MaxColumn; j++)
+            {   
+                // Add new Column 
+                if ( i === 0 ||i === MaxRow-1 || j === 0 || j === MaxColumn-1)  {worldArray [i][j] = 1; } // World Border condition : Only Walls .
+                else  { var randValue = Math.floor(Math.random() * 4) ; worldArray [i][j] = randValue;  } // World inner : random value from 0 to 4 .
+            }
+        }        
+        // console.log("worldArray : "+worldArray);
+    }
+
+    CreateRandomWorld ();
+
     // Dictionnary : Block description 
     var worldDict = 
     {
         0 : 'blank',
         1 : 'wall' ,
-        2 : 'sushi'
+        2 : 'sushi',
+        3 : 'onigiri',
+        4 : 'pumpky',
     }
-
+    // Score variable (eating)
+    var score =0;
     function drawWorld()
     {
         output ="";
@@ -77,6 +135,9 @@
             output += "</div>"; // Closing class ='row'
 
         }
+            // Get Score Dashboard
+            output +=  "<div id = 'Dashboard'><div class = 'ScoreAfficher'><p> "+score+" </p></div></div>";
+
         document.getElementById('world').innerHTML = output;
     }
     // invoque function : Draw World
@@ -88,12 +149,13 @@
         x : 1 ,
         y : 1
     }
+
+    
     // Now we create our keyboard listner to convert event to moves
     document.onkeydown = function(e)
     {
         // Conserved line to check the e.keyCode value
-         console.log(e.keyCode);
-         
+        // console.log(e.keyCode);
         // e.keyCode : Up--> 38 // Down --> 40 // left --> 37 // right --> 39
             
         if(e.keyCode == 38 )// up
@@ -128,14 +190,26 @@
 
         // Eating Sushi 
         // our position is actualised 
-            if (worldArray[ninjaManPosition.x][ninjaManPosition.y] == 2)
+            if (worldArray[ninjaManPosition.x][ninjaManPosition.y] == 2)  
             {
                 // Sushi eated (now it's a Blank)
+                score += 5;
                 worldArray[ninjaManPosition.x][ninjaManPosition.y] = 0
                 // Re-Draw the World 
                 drawWorld();
             }
 
+        // Eating onigiri 
+        // our position is actualised 
+        if (worldArray[ninjaManPosition.x][ninjaManPosition.y] == 3)  
+            {
+                // Sushi eated (now it's a Blank)
+                score += 10;
+                worldArray[ninjaManPosition.x][ninjaManPosition.y] = 0
+                // Re-Draw the World 
+                drawWorld();
+            }
+            
         // Re-Draw NinjaMan every Click 
         drawNinjaMan();
         
@@ -143,7 +217,7 @@
 
     function drawNinjaMan()
     {
-        console.log (ninjaManPosition.x +" // "+ ninjaManPosition.y);
+        //console.log (ninjaManPosition.x +" // "+ ninjaManPosition.y);
         // we convert moves of NinjaMan to geographical position 
         document.getElementById('ninjaman').style.top = 
         ninjaManPosition.x *40+'px'
@@ -156,3 +230,12 @@
 
 </script>
 </html>
+
+<!--
+Your challenge will be to:
+(Basic) Keep Score of how many Sushi's NinjaMan eats        --- Solved
+(Basic) Add Onigiri as an alternative food to eat           --- Solved
+(Intermediate) Random world generated when loading the page --- Solved
+(Advanced) Add Ghosts that chase NinjaMan around            ---
+(Advanced) Give NinjaMan 3 lives where Game Over occurs when a ghost hits NinjaMan 3 times   --- 
+-->
